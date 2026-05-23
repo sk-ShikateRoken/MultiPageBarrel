@@ -2,6 +2,8 @@ package shikateroken.multipagebarrel.block;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -26,12 +28,17 @@ public class MultipageBarrelBlock extends BaseEntityBlock {
         return CODEC;
     }
 
+
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof MultipageBarrelBlockEntity barrel) {
                 player.openMenu(barrel, pos);
+
+                // 【追加】開く音を鳴らす
+                // 0.5F は音量、 level.random... の部分は音の高さを少しランダムにするバニラの仕様です
+                level.playSound(null, pos, SoundEvents.BARREL_OPEN, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.1F + 0.9F);
             }
         }
         return InteractionResult.sidedSuccess(level.isClientSide);

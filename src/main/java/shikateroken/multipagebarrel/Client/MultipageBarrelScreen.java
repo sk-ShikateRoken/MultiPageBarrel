@@ -26,7 +26,7 @@ public class MultipageBarrelScreen extends AbstractContainerScreen<MultipageBarr
         }).bounds(this.leftPos - 20, this.topPos + 20, 20, 20).build());
 
         this.addRenderableWidget(Button.builder(Component.literal(">"), button -> {
-            if (this.menu.currentPage < MultipageBarrelMenu.PAGES - 1) this.menu.currentPage++;
+            if (this.menu.currentPage < this.menu.totalPages - 1) this.menu.currentPage++;
         }).bounds(this.leftPos + this.imageWidth, this.topPos + 20, 20, 20).build());
     }
 

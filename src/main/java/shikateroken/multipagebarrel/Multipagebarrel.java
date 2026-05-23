@@ -70,6 +70,7 @@ public class Multipagebarrel {
     public Multipagebarrel(IEventBus modEventBus, ModContainer modContainer) {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
+        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
 
 //        // Register the Deferred Register to the mod event bus so blocks get registered
 //        BLOCKS.register(modEventBus);

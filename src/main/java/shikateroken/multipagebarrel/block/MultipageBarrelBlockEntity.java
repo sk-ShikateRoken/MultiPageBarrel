@@ -12,22 +12,30 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
+import shikateroken.multipagebarrel.Config;
 import shikateroken.multipagebarrel.Multipagebarrel;
 import shikateroken.multipagebarrel.memu.MultipageBarrelMenu;
 import shikateroken.multipagebarrel.registry.MultipageBarrelBEs;
 
 public class MultipageBarrelBlockEntity extends BlockEntity implements MenuProvider {
-    public static final int SLOTS = 54; // 27スロット × 2ページ
-    private final ItemStackHandler itemHandler = new ItemStackHandler(SLOTS) {
-        @Override
-        protected void onContentsChanged(int slot) {
-            setChanged();
-        }
-    };
 
+    private final ItemStackHandler itemHandler;
     public MultipageBarrelBlockEntity(BlockPos pos, BlockState state) {
         super(MultipageBarrelBEs.MULTIPAGE_BARREL_BE.get(), pos, state);
+
+        // Configからページ数を取得し、27スロットを掛ける
+        int totalSlots = Config.MAX_PAGES.get() * 27;
+
+        this.itemHandler = new ItemStackHandler(totalSlots) {
+
+
+            @Override
+            protected void onContentsChanged(int slot) {
+                setChanged();
+            }
+        };
     }
+
 
     public ItemStackHandler getItemHandler() {
         return itemHandler;
@@ -39,11 +47,7 @@ public class MultipageBarrelBlockEntity extends BlockEntity implements MenuProvi
         tag.put("Inventory", itemHandler.serializeNBT(registries));
     }
 
-    @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        itemHandler.deserializeNBT(registries, tag.getCompound("Inventory"));
-    }
+
 
     @Override
     public Component getDisplayName() {
@@ -54,5 +58,17 @@ public class MultipageBarrelBlockEntity extends BlockEntity implements MenuProvi
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory playerInv, Player player) {
         return new MultipageBarrelMenu(id, playerInv, this.worldPosition);
+    }
+    @Override
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        itemHandler.deserializeNBT(registries, tag.getCompound("Inventory"));
+
+        // 【重要】Configのページ数を変更した後にワールドに入った時、
+        // 古いデータと現在のConfigのサイズを一致させるための安全処理
+        int configuredSize = Config.MAX_PAGES.get() * 27;
+        if (itemHandler.getSlots() != configuredSize) {
+            itemHandler.setSize(configuredSize);
+        }
     }
 }

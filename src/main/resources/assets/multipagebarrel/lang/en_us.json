@@ -1,5 +1,4 @@
 {
-  "itemGroup.multipagebarrel": "Example Mod Tab",
-  "block.multipagebarrel.example_block": "Example Block",
-  "item.multipagebarrel.example_item": "Example Item"
+  "block.multipagebarrel.multipage_barrel": "Multu page Barrel",
+  "item.multipagebarrel.multipage_barrel": "Multu page Barrel"
 }
