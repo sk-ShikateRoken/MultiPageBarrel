@@ -1,0 +1,58 @@
+package shikateroken.multipagebarrel.block;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import org.jetbrains.annotations.Nullable;
+import shikateroken.multipagebarrel.Multipagebarrel;
+import shikateroken.multipagebarrel.memu.MultipageBarrelMenu;
+import shikateroken.multipagebarrel.registry.MultipageBarrelBEs;
+
+public class MultipageBarrelBlockEntity extends BlockEntity implements MenuProvider {
+    public static final int SLOTS = 54; // 27スロット × 2ページ
+    private final ItemStackHandler itemHandler = new ItemStackHandler(SLOTS) {
+        @Override
+        protected void onContentsChanged(int slot) {
+            setChanged();
+        }
+    };
+
+    public MultipageBarrelBlockEntity(BlockPos pos, BlockState state) {
+        super(MultipageBarrelBEs.MULTIPAGE_BARREL_BE.get(), pos, state);
+    }
+
+    public ItemStackHandler getItemHandler() {
+        return itemHandler;
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        tag.put("Inventory", itemHandler.serializeNBT(registries));
+    }
+
+    @Override
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        itemHandler.deserializeNBT(registries, tag.getCompound("Inventory"));
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return Component.translatable("block.multipagebarrel.multipage_barrel");
+    }
+
+    @Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int id, Inventory playerInv, Player player) {
+        return new MultipageBarrelMenu(id, playerInv, this.worldPosition);
+    }
+}
