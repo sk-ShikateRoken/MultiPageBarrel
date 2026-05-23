@@ -12,8 +12,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
-import shikateroken.multipagebarrel.Config;
-import shikateroken.multipagebarrel.Multipagebarrel;
+import shikateroken.multipagebarrel.Config.MultipageBarrelConfig;
 import shikateroken.multipagebarrel.memu.MultipageBarrelMenu;
 import shikateroken.multipagebarrel.registry.MultipageBarrelBEs;
 
@@ -24,7 +23,7 @@ public class MultipageBarrelBlockEntity extends BlockEntity implements MenuProvi
         super(MultipageBarrelBEs.MULTIPAGE_BARREL_BE.get(), pos, state);
 
         // Configからページ数を取得し、27スロットを掛ける
-        int totalSlots = Config.MAX_PAGES.get() * 27;
+        int totalSlots = MultipageBarrelConfig.MAX_PAGES.get() * 27;
 
         this.itemHandler = new ItemStackHandler(totalSlots) {
 
@@ -66,7 +65,7 @@ public class MultipageBarrelBlockEntity extends BlockEntity implements MenuProvi
 
         // 【重要】Configのページ数を変更した後にワールドに入った時、
         // 古いデータと現在のConfigのサイズを一致させるための安全処理
-        int configuredSize = Config.MAX_PAGES.get() * 27;
+        int configuredSize = MultipageBarrelConfig.MAX_PAGES.get() * 27;
         if (itemHandler.getSlots() != configuredSize) {
             itemHandler.setSize(configuredSize);
         }

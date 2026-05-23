@@ -13,8 +13,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
-import shikateroken.multipagebarrel.Config;
-import shikateroken.multipagebarrel.Multipagebarrel;
+import shikateroken.multipagebarrel.Config.MultipageBarrelConfig;
 import shikateroken.multipagebarrel.block.MultipageBarrelBlockEntity;
 import shikateroken.multipagebarrel.registry.MultipageBarrelMenus;
 
@@ -34,7 +33,7 @@ public class MultipageBarrelMenu extends AbstractContainerMenu {
 
         this.blockPos = pos;
         this.level = playerInv.player.level();
-        this.totalPages = Config.MAX_PAGES.get();
+        this.totalPages = MultipageBarrelConfig.MAX_PAGES.get();
         int totalSlots = this.totalPages * 27;
 
         BlockEntity blockEntity = playerInv.player.level().getBlockEntity(pos);
