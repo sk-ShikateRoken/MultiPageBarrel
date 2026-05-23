@@ -47,27 +47,27 @@ public class MultipageBarrelMenu extends AbstractContainerMenu {
                 for (int row = 0; row < 8; ++row) {
                     for (int col = 0; col < 13; ++col) {
                         int index = (page * 104) + (row * 13) + col;
-                        this.addSlot(new PagedSlot(handler, index, 7 + col * 18, 18 + row * 18, page, () -> this.currentPage, this.isClientSide));
+                        this.addSlot(new PagedSlot(handler, index, 8 + col * 18, 19 + row * 18, page, () -> this.currentPage, this.isClientSide));
                     }
                 }
             }
         } else {
             // クライアント側でBEが取得できない場合のダミー
-            IItemHandler dummy = new ItemStackHandler(54);
+            IItemHandler dummy = new ItemStackHandler(totalSlots);
             for (int i = 0; i < totalSlots; i++) {
-                this.addSlot(new PagedSlot(dummy, i, 7 + (i % 13) * 18, 18 + ((i % 104) / 13) * 18, i / 104, () -> this.currentPage, this.isClientSide));
+                this.addSlot(new PagedSlot(dummy, i, 8 + (i % 13) * 18, 19 + ((i % 104) / 13) * 18, i / 104, () -> this.currentPage, this.isClientSide));
             }
         }
 
         // プレイヤーのインベントリ
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 9; ++col) {
-                this.addSlot(new Slot(playerInv, col + row * 9 + 9, 43 + col * 18, 175 + row * 18));
+                this.addSlot(new Slot(playerInv, col + row * 9 + 9, 44 + col * 18, 176 + row * 18));
             }
         }
         // プレイヤーのホットバー
         for (int col = 0; col < 9; ++col) {
-            this.addSlot(new Slot(playerInv, col, 43 + col * 18, 233));
+            this.addSlot(new Slot(playerInv, col, 44 + col * 18, 234));
         }
     }
 

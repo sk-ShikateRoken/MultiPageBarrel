@@ -17,6 +17,7 @@ public class MultipageBarrelScreen extends AbstractContainerScreen<MultipageBarr
         this.imageWidth = 248;
         this.imageHeight = 258;
         this.inventoryLabelY = this.imageHeight - 94;
+        this.inventoryLabelX = 44;
     }
 
     @Override
