@@ -4,6 +4,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -11,6 +13,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 import shikateroken.multipagebarrel.Config.MultipageBarrelConfig;
@@ -23,6 +26,7 @@ import java.util.List;
 public class MultipageBarrelBlockEntity extends BlockEntity implements MenuProvider {
     public int  slotsparpage = 104;
     private final ItemStackHandler itemHandler;
+    private int openCount = 0;
     public MultipageBarrelBlockEntity(BlockPos pos, BlockState state) {
         super(MultipageBarrelBEs.MULTIPAGE_BARREL_BE.get(), pos, state);
 
@@ -37,6 +41,44 @@ public class MultipageBarrelBlockEntity extends BlockEntity implements MenuProvi
                 setChanged();
             }
         };
+    }
+    public void startOpen(Player player) {
+        if (!this.remove && !player.isSpectator()) {
+            if (this.openCount < 0) this.openCount = 0;
+            this.openCount++;
+
+            // 初めて開かれた時だけ「開く音」と「モデルの切り替え」を行う
+            if (this.openCount == 1) {
+                this.updateBlockState(true);
+                if (this.level != null) {
+                    this.level.playSound(null, this.worldPosition, SoundEvents.BARREL_OPEN, SoundSource.BLOCKS, 0.5F, this.level.random.nextFloat() * 0.1F + 0.9F);
+                }
+            }
+        }
+    }
+    public void stopOpen(Player player) {
+        if (!this.remove && !player.isSpectator()) {
+            this.openCount--;
+
+            // 最後の1人が閉じた時だけ「閉じる音」と「モデルの切り替え」を行う
+            if (this.openCount <= 0) {
+                this.openCount = 0;
+                this.updateBlockState(false);
+                if (this.level != null) {
+                    this.level.playSound(null, this.worldPosition, SoundEvents.BARREL_CLOSE, SoundSource.BLOCKS, 0.5F, this.level.random.nextFloat() * 0.1F + 0.9F);
+                }
+            }
+        }
+    }
+
+    // 【追加】ブロックの見た目(BlockState)を更新するメソッド
+    private void updateBlockState(boolean open) {
+        if (this.level != null) {
+            BlockState state = this.getBlockState();
+            if (state.getBlock() instanceof MultipageBarrelBlock && state.getValue(BlockStateProperties.OPEN) != open) {
+                this.level.setBlock(this.worldPosition, state.setValue(BlockStateProperties.OPEN, open), 3);
+            }
+        }
     }
 
 

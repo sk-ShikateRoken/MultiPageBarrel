@@ -27,6 +27,8 @@ public class MultipageBarrelMenu extends AbstractContainerMenu {
     private final Level level;
     public final int totalPages;
 
+    private MultipageBarrelBlockEntity barrel;
+
     public MultipageBarrelMenu(int id, Inventory playerInv, BlockPos pos) {
         super(MultipageBarrelMenus.MULTIPAGE_BARREL_MENU.get(), id);
         this.isClientSide = playerInv.player.level().isClientSide();
@@ -39,7 +41,11 @@ public class MultipageBarrelMenu extends AbstractContainerMenu {
         totalSlots = this.totalPages * 104;
 
         BlockEntity blockEntity = playerInv.player.level().getBlockEntity(pos);
-        if (blockEntity instanceof MultipageBarrelBlockEntity barrel) {
+        if (blockEntity instanceof MultipageBarrelBlockEntity be) {
+            this.barrel = be;
+            if(!this.isClientSide){
+                this.barrel.startOpen(playerInv.player);
+            }
             IItemHandler handler = barrel.getItemHandler();
 
             // 樽のインベントリ（全ページ分、すべて同じX,Y座標に配置する）
@@ -124,9 +130,9 @@ public class MultipageBarrelMenu extends AbstractContainerMenu {
     public void removed(Player player) {
         super.removed(player);
 
-        // サーバー側で閉じる音を鳴らす
-        if (!this.isClientSide) {
-            this.level.playSound(null, this.blockPos, SoundEvents.BARREL_CLOSE, SoundSource.BLOCKS, 0.5F, this.level.random.nextFloat() * 0.1F + 0.9F);
+        // 【変更】以前ここに書いていた音を鳴らす処理は削除し、BlockEntityに任せる
+        if (!this.isClientSide && this.barrel != null) {
+            this.barrel.stopOpen(player); // 閉じたことを通知する
         }
     }
 }
