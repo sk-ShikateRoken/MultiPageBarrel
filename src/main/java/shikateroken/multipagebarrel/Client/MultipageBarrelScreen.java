@@ -6,7 +6,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import shikateroken.multipagebarrel.memu.MultipageBarrelMenu;
+import shikateroken.multipagebarrel.menu.MultipageBarrelMenu;
 
 public class MultipageBarrelScreen extends AbstractContainerScreen<MultipageBarrelMenu> {
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(

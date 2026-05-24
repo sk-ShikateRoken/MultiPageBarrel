@@ -5,7 +5,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import shikateroken.multipagebarrel.memu.MultipageBarrelMenu;
+import shikateroken.multipagebarrel.menu.MultipageBarrelMenu;
 
 import java.util.function.Supplier;
 
