@@ -11,7 +11,12 @@ public class MultipageBarrelItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems("multipagebarrel");
 
     public static final Supplier<Item> MULTIPAGE_BARREL_ITEM = ITEMS.register("multipage_barrel",
-            () -> new BlockItem(MultipageBarrelBlocks.MULTIPAGE_BARREL.get(), new Item.Properties()));
+            () -> new BlockItem(MultipageBarrelBlocks.MULTIPAGE_BARREL.get(), new Item.Properties()){
+                @Override
+                public boolean canFitInsideContainerItems() {
+                    return false;
+                }
+            });
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

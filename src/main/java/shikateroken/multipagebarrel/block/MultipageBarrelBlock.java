@@ -5,8 +5,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -14,8 +16,12 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class MultipageBarrelBlock extends BaseEntityBlock {
     public static final MapCodec<MultipageBarrelBlock> CODEC = simpleCodec(MultipageBarrelBlock::new);
@@ -82,5 +88,52 @@ public class MultipageBarrelBlock extends BaseEntityBlock {
     @Override
     protected RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
+    }
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (!state.is(newState.getBlock())) {
+            // 中身をばらまくループ処理は削除しました（アイテム化した樽の中に保持するため）
+            level.updateNeighbourForOutputSignal(pos, this);
+            super.onRemove(state, level, pos, newState, isMoving);
+        }
+    }
+
+    // 【追加】ブロック破壊時のドロップアイテムに、中身のデータを書き込む
+    @Override
+    protected List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
+        // デフォルトのドロップ（LootTableの設定など）を取得
+        List<ItemStack> drops = super.getDrops(state, builder);
+
+        BlockEntity blockEntity = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
+        if (blockEntity instanceof MultipageBarrelBlockEntity barrel) {
+            boolean hasAddedData = false;
+
+            // ドロップアイテムの中にこの樽自身があった場合、データを保存する
+            for (ItemStack drop : drops) {
+                if (drop.is(this.asItem())) {
+                    barrel.saveToItem(drop, builder.getLevel().registryAccess());
+                    hasAddedData = true;
+                }
+            }
+
+            // もしLootTableが未設定でドロップが空だった場合のフェールセーフ（確実にドロップさせる）
+            if (!hasAddedData) {
+                ItemStack stack = new ItemStack(this);
+                barrel.saveToItem(stack, builder.getLevel().registryAccess());
+                return java.util.List.of(stack);
+            }
+        }
+        return drops;
+    }
+
+    // 【追加】クリエイティブモードでホイールクリック(Pick Block)した時にも中身を保持する
+    @Override
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
+        ItemStack stack = super.getCloneItemStack(level, pos, state);
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof MultipageBarrelBlockEntity barrel) {
+            barrel.saveToItem(stack, level.registryAccess());
+        }
+        return stack;
     }
 }

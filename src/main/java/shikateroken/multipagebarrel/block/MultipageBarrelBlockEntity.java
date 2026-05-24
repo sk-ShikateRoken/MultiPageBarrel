@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 import shikateroken.multipagebarrel.Config.MultipageBarrelConfig;
-import shikateroken.multipagebarrel.memu.MultipageBarrelMenu;
+import shikateroken.multipagebarrel.menu.MultipageBarrelMenu;
 import shikateroken.multipagebarrel.registry.MultipageBarrelBEs;
 
 import java.util.ArrayList;
@@ -34,11 +34,15 @@ public class MultipageBarrelBlockEntity extends BlockEntity implements MenuProvi
         int totalSlots = MultipageBarrelConfig.MAX_PAGES.get() * slotsparpage;
 
         this.itemHandler = new ItemStackHandler(totalSlots) {
-
-
             @Override
             protected void onContentsChanged(int slot) {
                 setChanged();
+            }
+            //NBT爆弾対策
+            @Override
+            public boolean isItemValid(int slot, ItemStack stack) {
+                // canFitInsideContainerItems() が false のアイテム（シュルカーボックスなど）を弾く
+                return stack.getItem().canFitInsideContainerItems();
             }
         };
     }
